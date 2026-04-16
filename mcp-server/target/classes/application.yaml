@@ -1,0 +1,51 @@
+spring:
+  main:
+    banner-mode: off
+    web-application-type: none
+  profiles:
+    group:
+      docker:
+        - docker
+  threads:
+    virtual:
+      enabled: true
+  ai:
+    mcp:
+      server:
+        name: mcp-demo-server
+        version: 1.0.0
+        type: SYNC
+        protocol: SSE
+        tool-change-notification: true
+        prompt-change-notification: true
+        annotation-scanner:
+          enabled: true
+  docker:
+    compose:
+      enabled: true
+      # 'file' is more explicit than 'arguments' for pointing to the path
+      file: docker/compose.yaml
+  datasource:
+    url: jdbc:postgresql://localhost:5432/groot_db
+    username: groot
+    password: gr00t
+logging:
+  # Enable ECS format (standard for modern log forwarders)
+  structured:
+    format:
+      console: ecs
+    # Optional: Customize the JSON output
+    json:
+      add:
+        environment: ${SPRING_PROFILES_ACTIVE:prod}
+      rename:
+        process.id: pid
+  level:
+    root: INFO
+    '[org.springframework.boot.docker.compose]': DEBUG
+  exception-conversion-word: wEx
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss} %-5level %logger{36} - %msg%n"
+  # Force logs to stderr so they don't break the MCP JSON-RPC on stdout
+  stderr:
+    enabled: true
